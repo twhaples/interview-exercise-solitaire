@@ -25,6 +25,8 @@ class Sol::Session
     @faceup = (0..6).map { Sol::Pile::Simple.new }
     @facedown = (0..6).map { Sol::Pile::Hidden.new }
     @discard = (0..3).map { Sol::Pile::Simple.new }
+
+    @destinations = [*@faceup, *@discard]
     @started = false
   end
 
@@ -41,5 +43,9 @@ class Sol::Session
         facedown[i].add(stack.deal)
       end
     end
+  end
+
+  def get_pile(type, i)
+    {:faceup => @faceup, :discard => @discard}[type][i]
   end
 end
