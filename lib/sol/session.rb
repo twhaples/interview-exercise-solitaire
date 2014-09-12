@@ -1,4 +1,6 @@
 require 'sol/deck'
+require 'sol/pile/simple'
+require 'sol/pile/hidden'
 
 module Sol; end
 class Sol::Session
@@ -14,14 +16,14 @@ class Sol::Session
   def initialize
     @deck = Sol::Deck.new
 
-    @stack = Sol::Pile.new
-    @waste = Sol::Pile.new
+    @stack = Sol::Pile::Simple.new
+    @waste = Sol::Pile::Simple.new
 
     @deck.cards.each {|c| @stack.add(c) }
 
-    @faceup = (0..6).map { Sol::Pile.new }
-    @facedown = (0..6).map { Sol::Pile.new }
-    @discard = (0..3).map { Sol::Pile.new }
+    @faceup = (0..6).map { Sol::Pile::Simple.new }
+    @facedown = (0..6).map { Sol::Pile::Hidden.new }
+    @discard = (0..3).map { Sol::Pile::Simple.new }
   end
 
   def deal!

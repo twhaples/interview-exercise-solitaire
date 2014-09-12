@@ -1,8 +1,6 @@
-require 'rspec'
-require 'sol/pile'
 require 'sol/card'
 
-describe Sol::Pile do
+RSpec.shared_examples 'a pile' do
   let(:ace_of_clubs) { Sol::Card.new(1, :clubs) }
   let(:queen_of_spades) { Sol::Card.new(12, :spades) }
   let(:all_diamonds) { (1..13).map {|r| Sol::Card.new(r, :diamonds)} }
