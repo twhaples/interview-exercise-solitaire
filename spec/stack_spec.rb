@@ -24,4 +24,28 @@ describe Sol::Pile::Stack do
       end
     end
   end
+
+  describe '#deal' do
+    it 'should take the first card' do
+      all_diamonds = (1..13).map {|r| Sol::Card.new(r, :diamonds)}
+
+      pile = described_class.new
+      all_diamonds.each {|d| pile.add(d) }
+      expect(pile.size).to eq 13
+
+      dealt = pile.deal
+      expect(dealt).to eq(all_diamonds[0])
+      expect(pile.size).to eq 12
+
+      dealt = pile.deal
+      expect(dealt).to eq(all_diamonds[1])
+      expect(pile.size).to eq 11
+    end
+    it 'should complain if it runs empty' do
+      pile = described_class.new
+      pile.add(Sol::Card.new(99, :fish))
+      pile.deal
+      expect { pile.deal }.to raise_error(ArgumentError)
+    end
+  end
 end

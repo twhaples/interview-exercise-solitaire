@@ -36,9 +36,9 @@ class Sol::Session
   end
   def deal!
     (0..6).each do |i_faceup|
-      faceup[i_faceup].add(stack.remove)
+      faceup[i_faceup].add(stack.deal)
       ((i_faceup+1)..6).each do |i|
-        facedown[i].add(stack.remove)
+        facedown[i].add(stack.deal)
       end
     end
   end

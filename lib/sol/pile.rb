@@ -11,11 +11,4 @@ class Sol::Pile
     card.pile = self
     @cards << card
   end
-
-  def remove
-    raise ArgumentError if @cards.empty?
-    card = @cards.shift
-    card.pile = nil
-    return card
-  end
 end
