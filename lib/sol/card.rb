@@ -9,7 +9,11 @@ class Sol::Card
   end
 
   def pile=(pile)
-    raise ArgumentError if @pile
+    raise ArgumentError if @pile.nil? == pile.nil?
     @pile = pile
+  end
+
+  def to_s
+    "#{@rank} of #{@suit}"
   end
 end
