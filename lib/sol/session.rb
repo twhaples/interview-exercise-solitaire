@@ -1,6 +1,7 @@
 require 'sol/deck'
 require 'sol/pile/simple'
 require 'sol/pile/hidden'
+require 'sol/pile/stack'
 
 module Sol; end
 class Sol::Session
