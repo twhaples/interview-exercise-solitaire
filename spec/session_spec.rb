@@ -40,4 +40,22 @@ describe Sol::Session do
       expect(game.deck.cards.reject {|c| c.pile == game.stack }.length).to eq((1..7).to_a.inject(:+))
     end
   end
+
+  describe '#start!' do
+    it 'should shuffle the stack and deal (in that order)' do
+      game = described_class.new
+      Test::Redef.rd(
+        'Sol::Pile::Stack#shuffle!' => :wiretap,
+        "#{described_class}#deal!" => :wiretap,
+      ) do |rd|
+        game.start!
+        expect(rd.call_order).to eq(['Sol::Pile::Stack#shuffle!', "#{described_class}#deal!"])
+      end
+    end
+    it 'should only work once' do
+      game = described_class.new
+      game.start!
+      expect { game.start! }.to raise_error(ArgumentError)
+    end
+  end
 end

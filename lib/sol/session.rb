@@ -16,7 +16,7 @@ class Sol::Session
   def initialize
     @deck = Sol::Deck.new
 
-    @stack = Sol::Pile::Simple.new
+    @stack = Sol::Pile::Stack.new
     @waste = Sol::Pile::Simple.new
 
     @deck.cards.each {|c| @stack.add(c) }
@@ -24,8 +24,15 @@ class Sol::Session
     @faceup = (0..6).map { Sol::Pile::Simple.new }
     @facedown = (0..6).map { Sol::Pile::Hidden.new }
     @discard = (0..3).map { Sol::Pile::Simple.new }
+    @started = false
   end
 
+  def start!
+    raise ArgumentError if @started
+    @stack.shuffle!
+    deal!
+    @started = true
+  end
   def deal!
     (0..6).each do |i_faceup|
       faceup[i_faceup].add(stack.remove)

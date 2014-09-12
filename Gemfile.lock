@@ -14,9 +14,11 @@ GEM
     rspec-mocks (3.1.0)
       rspec-support (~> 3.1.0)
     rspec-support (3.1.0)
+    test-redef (1.0.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   rspec
+  test-redef
