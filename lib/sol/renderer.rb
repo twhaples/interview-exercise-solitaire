@@ -35,6 +35,9 @@ class Sol::Renderer
   def self.render_card(c)
     return '' if c.nil?
     return '**' unless c.pile.visible?
+    return _render_card(c)
+  end
+  def self._render_card(c)
     return Suits[c.suit] + Ranks[c.rank]
   end
 
