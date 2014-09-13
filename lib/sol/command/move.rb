@@ -1,7 +1,7 @@
 require 'virtus'
 
-module Sol; end
-class Sol::CardCommand
+module Sol; module Command; end end
+class Sol::Command::Move
   include Virtus.model
 
   attribute :card, String

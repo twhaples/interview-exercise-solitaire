@@ -1,5 +1,5 @@
 require 'virtus'
-require 'sol/card_command'
+require 'sol/command/move'
 
 module Sol; end
 class Sol::Parser
@@ -19,7 +19,7 @@ class Sol::Parser
       when 'r'; return :restart
       when /\A\s*\Z/; return nil
       when /\A\s*(\S\S)\s*(\S)\s*\Z/
-        return Sol::CardCommand.new(:card => $1, :dest => $2)
+        return Sol::Command::Move.new(:card => $1, :dest => $2)
       else
         return :invalid
     end

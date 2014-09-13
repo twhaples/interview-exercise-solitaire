@@ -48,11 +48,11 @@ describe Sol::Parser do
       end
       it 'should handle card->pile commands with minimal validation' do
         write.puts("ca 2")
-        expect(parser.next).to eq(Sol::CardCommand.new(:card => 'ca', :dest => '2'))
+        expect(parser.next).to eq(Sol::Command::Move.new(:card => 'ca', :dest => '2'))
         write.puts("xx x")
-        expect(parser.next).to eq(Sol::CardCommand.new(:card => 'xx', :dest => 'x'))
+        expect(parser.next).to eq(Sol::Command::Move.new(:card => 'xx', :dest => 'x'))
         write.puts("xy \t z  ")
-        expect(parser.next).to eq(Sol::CardCommand.new(:card => 'xy', :dest => 'z'))
+        expect(parser.next).to eq(Sol::Command::Move.new(:card => 'xy', :dest => 'z'))
       end
       it 'should not get confused by miscellaneous other invalid inputs' do
         write.puts("a man, a plan, a canal, panama")

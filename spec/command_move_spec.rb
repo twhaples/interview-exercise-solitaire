@@ -1,8 +1,8 @@
 require 'rspec'
 require 'sol/session'
-require 'sol/card_command'
+require 'sol/command/move'
 
-describe Sol::CardCommand do
+describe Sol::Command::Move do
   describe '#to_s' do
     it "should interpolate .card and .dest" do
       expect(described_class.new(:card => 'ac', :dest => 'x').to_s).to eq("move card ac to pile x")
