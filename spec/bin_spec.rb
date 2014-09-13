@@ -8,6 +8,9 @@ describe Sol::Bin do
       bin = Sol::Bin.new
       expect(bin.renderer).to be_a(Sol::Renderer)
       expect(bin.renderer.output).to eq(STDOUT)
+
+      expect(bin.parser).to be_a(Sol::Parser)
+      expect(bin.parser.input).to eq(STDIN)
     end
   end
   describe '#go!' do
