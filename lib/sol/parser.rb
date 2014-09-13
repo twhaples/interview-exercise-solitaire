@@ -1,4 +1,5 @@
 require 'virtus'
+require 'sol/card_command'
 
 module Sol; end
 class Sol::Parser
@@ -16,8 +17,11 @@ class Sol::Parser
     case line
       when 'q'; return :quit
       when 'r'; return :restart
-      when ''; return nil
+      when /\A\s*\Z/; return nil
+      when /\A\s*(\S\S)\s*(\S)\s*\Z/
+        return Sol::CardCommand.new(:card => $1, :dest => $2)
+      else
+        return :invalid
     end
-    return :invalid
   end
 end

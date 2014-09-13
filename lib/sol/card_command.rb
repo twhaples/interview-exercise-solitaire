@@ -3,8 +3,16 @@ require 'virtus'
 module Sol; end
 class Sol::CardCommand
   include Virtus.model
+
+  attribute :card, String
+  attribute :dest, String
+
   attribute :session, Object
 
+  def to_s; "move card #{card} to pile #{dest}"; end
+  def ==(card)
+    card.to_s == self.to_s
+  end
   def identify_dest(token)
     if token =~ /\A[1-7]\Z/
       return self.session.get_pile(:faceup, token.to_i - 1)
