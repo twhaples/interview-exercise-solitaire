@@ -6,11 +6,11 @@ module Sol; end
 class Sol::Bin
   include Virtus.model
 
-  attribute :session, Object, :default => lambda {|_,_| Sol::Session.new }
-  attribute :renderer, Object, :default => lambda {|bin, _| Sol::Renderer.new(bin.session) }
-  attribute :output, Object, :default => STDOUT
+  attribute :renderer, Object, :default => lambda {|_, _| Sol::Renderer.new(:output => STDOUT) }
   def go!
+    session = Sol::Session.new
     session.start!
-    output.puts renderer.render 
+    renderer.session = session
+    renderer.render! 
   end
 end

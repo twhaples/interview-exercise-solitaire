@@ -36,7 +36,7 @@ describe Sol::Renderer do
   describe '.new.to_s' do
     it 'should turn a session into plaintext' do
       session = Sol::Session.new
-      renderer = described_class.new(session)
+      renderer = described_class.new(:session => session)
       expect(renderer.render).to eq(<<EOT
 [sTack] [1] [2] [3] [4] [5] [6] [7] [D] [H] [c] [s]
 EOT
@@ -57,6 +57,15 @@ EOT
       screen.gsub!(/\s+$/m, '')
       expected.gsub!(/\s+$/m, '') 
       expect(screen).to eq(expected)
+    end
+  end
+  describe '#render!' do
+    it 'should puts data to the appropriate filehandle' do
+      session = Sol::Session.new.tap(&:start!)
+      fake_stdout = StringIO.new
+      renderer = described_class.new(:output => fake_stdout, :session => session)
+      renderer.render!
+      expect(fake_stdout.string).to eq(renderer.render)
     end
   end
 end
