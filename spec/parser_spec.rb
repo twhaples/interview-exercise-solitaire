@@ -46,6 +46,10 @@ describe Sol::Parser do
         expect(parser.next).to eq(:restart)
         expect(parser.next).to eq(:quit)
       end
+      it 'should handle the take-three command' do
+        write.puts('T')
+        expect(parser.next).to be_a(Sol::Command::TakeThree)
+      end
       it 'should handle card->pile commands with minimal validation' do
         write.puts("ca 2")
         expect(parser.next).to eq(Sol::Command::Move.new(:card => 'ca', :dest => '2'))

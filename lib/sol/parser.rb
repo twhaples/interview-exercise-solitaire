@@ -1,4 +1,5 @@
 require 'virtus'
+require 'sol/command/take_three'
 require 'sol/command/move'
 
 module Sol; end
@@ -17,6 +18,7 @@ class Sol::Parser
     case line
       when 'q'; return :quit
       when 'r'; return :restart
+      when 't'; return Sol::Command::TakeThree.new
       when /\A\s*\Z/; return nil
       when /\A\s*(\S\S)\s*(\S)\s*\Z/
         return Sol::Command::Move.new(:card => $1, :dest => $2)
