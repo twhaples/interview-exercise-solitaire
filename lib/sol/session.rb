@@ -5,6 +5,7 @@ require 'sol/pile/stack'
 
 module Sol; end
 class Sol::Session
+  attr_reader :state # :preplay => :play => :victory
   attr_reader :deck  # all the cards
 
   attr_reader :stack # the thing you take 3 at a time from
@@ -27,15 +28,16 @@ class Sol::Session
     @discard = (0..3).map { Sol::Pile::Simple.new }
 
     @destinations = [*@faceup, *@discard]
-    @started = false
+    @state = :preplay
   end
 
   def start!
-    raise ArgumentError if @started
+    raise ArgumentError unless @state == :preplay
     @stack.shuffle!
     deal!
-    @started = true
+    @state = :play
   end
+
   def deal!
     (0..6).each do |i_faceup|
       faceup[i_faceup].add(stack.deal)
@@ -47,5 +49,8 @@ class Sol::Session
 
   def get_pile(type, i)
     {:faceup => @faceup, :discard => @discard}[type][i]
+  end
+
+  def execute(command)
   end
 end
