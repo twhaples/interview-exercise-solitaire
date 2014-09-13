@@ -31,6 +31,19 @@ describe Sol::Parser do
           :restart, :restart, :restart, :quit, :restart
         ])
       end
+      it 'should handle nonsense' do
+        write.puts("fish")
+        expect(parser.next).to eq(:invalid)
+      end
+      it 'should handle empty strings' do
+        write.puts
+        expect(parser.next).to be_nil
+      end
+      it 'should handle lowercase' do
+        write.puts("r\nq")
+        expect(parser.next).to eq(:restart)
+        expect(parser.next).to eq(:quit)
+      end
     end
   end
 end
