@@ -7,7 +7,7 @@ require 'sol/renderer'
 describe Sol::Renderer do
   describe '.render_card' do
     it 'should render visible cards right' do
-      pile = Sol::Pile::Simple.new
+      pile = Sol::Pile::Standard.new
       expect(Sol::Deck.new.cards.map do |c| 
         pile.add(c)
         described_class.render_card(c)

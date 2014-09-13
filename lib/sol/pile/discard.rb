@@ -1,4 +1,4 @@
 require 'sol/pile'
-class Sol::Pile::Simple < Sol::Pile
+class Sol::Pile::Discard < Sol::Pile
   def visible?; true; end
 end

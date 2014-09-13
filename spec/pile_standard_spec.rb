@@ -1,8 +1,8 @@
 require 'rspec'
-require 'sol/pile/simple'
+require 'sol/pile/standard'
 require_relative './pile_examples'
 
-describe Sol::Pile::Simple do
+describe Sol::Pile::Standard do
   it_behaves_like 'a pile'
   describe '#visible?' do
     it 'should be true' do

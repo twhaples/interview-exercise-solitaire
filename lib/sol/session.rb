@@ -1,8 +1,9 @@
 require 'sol/deck'
-require 'sol/pile/simple'
+require 'sol/pile/standard'
 require 'sol/pile/hidden'
 require 'sol/pile/stack'
 require 'sol/pile/waste'
+require 'sol/pile/discard'
 
 module Sol; end
 class Sol::Session
@@ -24,9 +25,9 @@ class Sol::Session
 
     @deck.cards.each {|c| @stack.add(c) }
 
-    @faceup = (0..6).map { Sol::Pile::Simple.new }
+    @faceup   = (0..6).map { Sol::Pile::Standard.new }
     @facedown = (0..6).map { Sol::Pile::Hidden.new }
-    @discard = (0..3).map { Sol::Pile::Simple.new }
+    @discard  = (0..3).map { Sol::Pile::Discard.new }
 
     @destinations = [*@faceup, *@discard]
     @state = :preplay
