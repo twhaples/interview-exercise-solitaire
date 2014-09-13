@@ -37,14 +37,15 @@ describe Sol::Renderer do
     it 'should turn a session into plaintext' do
       session = Sol::Session.new
       renderer = described_class.new(:session => session)
-      expect(renderer.render).to eq(<<EOT
+      expect(renderer.render).to eq(<<EOT.chomp
 [sTack] [1] [2] [3] [4] [5] [6] [7] [D] [H] [c] [s]
+> 
 EOT
       )
      
       session.deal!
       screen = renderer.render
-      expected = <<EOT
+      expected = <<EOT.chomp
 [sTack] [1] [2] [3] [4] [5] [6] [7] [D] [H] [c] [s]
         cA  **  **  **  **  **  **                
             c8  **  **  **  **  **                
@@ -53,6 +54,7 @@ EOT
                         DT  **  **
                             DK  **                 
                                 s2               
+> 
 EOT
       screen.gsub!(/\s+$/m, '')
       expected.gsub!(/\s+$/m, '') 
