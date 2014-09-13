@@ -1,7 +1,7 @@
 require 'virtus'
 
 module Sol; end
-class Sol::CommandParser
+class Sol::CardCommand
   include Virtus.model
   attribute :session, Object
 
