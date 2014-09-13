@@ -26,7 +26,7 @@ class Sol::Bin
           when :restart
             keep_playing = false
           else
-            session.execute(command)
+            command.execute(session)
         end
       end
     end

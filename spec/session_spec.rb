@@ -63,11 +63,4 @@ describe Sol::Session do
       expect { game.start! }.to raise_error(ArgumentError)
     end
   end
-
-  describe '#execute' do
-    it 'should take an argument' do
-      game.start!
-      game.execute(:whatevs)
-    end
-  end
 end

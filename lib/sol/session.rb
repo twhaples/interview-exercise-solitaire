@@ -50,7 +50,4 @@ class Sol::Session
   def get_pile(type, i)
     {:faceup => @faceup, :discard => @discard}[type][i]
   end
-
-  def execute(command)
-  end
 end
