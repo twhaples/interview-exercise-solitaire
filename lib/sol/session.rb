@@ -2,6 +2,7 @@ require 'sol/deck'
 require 'sol/pile/simple'
 require 'sol/pile/hidden'
 require 'sol/pile/stack'
+require 'sol/pile/waste'
 
 module Sol; end
 class Sol::Session
@@ -19,7 +20,7 @@ class Sol::Session
     @deck = Sol::Deck.new
 
     @stack = Sol::Pile::Stack.new
-    @waste = Sol::Pile::Simple.new
+    @waste = Sol::Pile::Waste.new
 
     @deck.cards.each {|c| @stack.add(c) }
 

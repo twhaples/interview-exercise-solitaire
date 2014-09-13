@@ -9,4 +9,8 @@ class Sol::Pile::Stack < Sol::Pile
     card.pile = nil
     return card
   end
+
+  def refresh(cards)
+    cards.each {|c| add(c) }
+  end
 end
