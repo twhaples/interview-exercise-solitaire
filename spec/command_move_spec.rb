@@ -17,14 +17,33 @@ describe Sol::Command::Move do
   describe '#execute' do
     let(:session) { Sol::Session.new }
     let(:ace_of_clubs) { session.deck.cards.first }
-       
-    it 'should let you move single cards on the top of a stack' do
-      session.deal! # unshuffled
-      expect { move('ca' => '7') }.to provide_boring_feedback.and change { 
-        ace_of_clubs.pile
-      }.from(session.faceup[0]).to(session.faceup[6])
-      expect(session.faceup[0].size).to eq(0)
-      expect(session.faceup[6].size).to eq(2)
+    let(:ace_of_diamonds) { session.deck.cards[13] } 
+    let(:nine_of_clubs) { session.deck.cards[8] } # under the ace of diamonds
+    it 'should let you move cards around' do
+      session.deal! # we're going to make use of an unshuffled layout a lot here
+      expect { move('da' => '7') }.to provide_boring_feedback.and change {
+        session.faceup[2].cards
+      }.to([nine_of_clubs]).and change {
+        session.faceup[6].size
+      }.to(2).and change {
+        ace_of_diamonds.pile
+      }.from(session.faceup[2]).to(session.faceup[6]) 
+    end
+
+    it 'should not let you move cards to the wrong pile' do
+      session.deal!
+      expect { move('da' => '1') }.to complain('Invalid move')
+      expect(ace_of_diamonds.pile).to eq(session.faceup[2]) # still
+    end
+    it 'should rely on pile.can_putdown?' do
+      session.deal!
+      Test::Redef.rd('Sol::Pile::Standard#can_putdown?' => proc { true }) do |rd|
+        expect { move('da' => 1) }.to provide_boring_feedback.and change {
+          ace_of_diamonds.pile
+        }.from(session.faceup[2]).to(session.faceup[0])
+        expect(rd.object).to eq([session.faceup[0]])
+        expect(rd.args[0][0].map(&:to_s)).to eq([ace_of_diamonds.to_s])
+      end
     end
 
     context 'moving to the discard pile' do

@@ -9,6 +9,14 @@ describe Sol::Card do
       expect(ace.suit).to eq(:clubs)
     end
   end
+  describe '#color' do
+    it 'should be the right color' do
+      expect(described_class.new(nil, :clubs).color).to eq(:black)
+      expect(described_class.new(77, :spades).color).to eq(:black)
+      expect(described_class.new(0, :hearts).color).to eq(:red)
+      expect(described_class.new("!", :diamonds).color).to eq(:red)
+    end
+  end
   describe '#to_s' do
     it 'should be a #{rank} of #{suit}' do
       two_hearts = described_class.new(2, :hearts)

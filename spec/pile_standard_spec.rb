@@ -1,18 +1,98 @@
 require 'rspec'
+require 'sol/deck'
 require 'sol/pile/standard'
 require 'sol/pile/hidden'
 require_relative './pile_examples'
 
 describe Sol::Pile::Standard do
-  it_behaves_like 'a pile'
+ it_behaves_like 'a pile'
   describe '#visible?' do
     it 'should be true' do
       expect(described_class.new.visible?).to eq(true)
     end
   end
+
+  let(:heart) { 3*13-1 }
+  let(:spade) { 2*13-1 }
+  let(:diamond) { 13-1 }
+  let(:club) { -1 }
+  let(:king) { 13 }
+  let(:queen) { 12 }
+  let(:jack) { 11 } 
+
   describe '#can_putdown?' do
-    it 'should be true for now' do
-      expect(described_class.new.can_putdown?(:whatevs)).to eq(true)
+    let(:pile) { described_class.new }
+    let(:cards) { Sol::Deck.new.cards }
+    context 'an empty pile' do
+      it 'should be true for a king' do
+        expect(cards[club+king].rank).to be(13)
+
+        expect(pile.can_putdown?([cards[club+king]])).to be(true)
+        expect(pile.can_putdown?([cards[diamond+king]])).to be(true) 
+        expect(pile.can_putdown?([cards[heart+king]])).to be(true)
+        expect(pile.can_putdown?([cards[spade+king]])).to be(true)
+      end
+      it 'should be true for an alternating king/queen/jack stack' do
+        expect(pile.can_putdown?([
+          cards[club+king], 
+          cards[diamond+queen], 
+          cards[spade+jack]
+        ])).to be(true)
+        expect(pile.can_putdown?([
+          cards[heart+king], 
+          cards[club+queen], 
+          cards[heart+jack]
+        ])).to be(true)
+      end
+
+      it 'should be false for an invalid stack' do
+        expect(pile.can_putdown?([
+          cards[club+king],
+          cards[spade+queen],
+          cards[club+jack]
+        ])).to be(false)
+      end
+    end
+    context 'on top of some cards' do
+      before do
+        pile.add(cards[spade+6])
+        pile.add(cards[diamond+5])
+      end
+      it 'should be true for the right rank of opposite color' do
+        expect(pile.can_putdown?([cards[club+4]])).to be(true)
+        expect(pile.can_putdown?([cards[spade+4]])).to be(true)
+      end
+      it 'should be false for the right rank of same color' do
+        expect(pile.can_putdown?([cards[diamond+4]])).to be(false)
+        expect(pile.can_putdown?([cards[heart+4]])).to be(false)
+      end
+      it 'should be false for the wrong rank of the opposite color' do
+        expect(pile.can_putdown?([cards[club+3]])).to be(false)
+        expect(pile.can_putdown?([cards[club+5]])).to be(false)
+      end
+      it 'should be true for a proper stack' do
+        expect(pile.can_putdown?([
+          cards[club+4], 
+          cards[diamond+3], 
+          cards[spade+2]
+        ])).to be(true)
+      end
+      it 'should be false for a non-alternating stack' do
+        expect(pile.can_putdown?([
+          cards[diamond+4], 
+          cards[club+3], 
+          cards[heart+2]
+        ])).to be(false)
+      end
+      it 'should be false for a stack that tries to wrap around' do
+        expect(pile.can_putdown?([
+          cards[club+4],
+          cards[diamond+3],
+          cards[spade+2],
+          cards[diamond+1],
+          cards[club+king]
+        ])).to be(false)
+      end
     end
   end
 
