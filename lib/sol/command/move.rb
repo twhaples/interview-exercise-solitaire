@@ -4,9 +4,13 @@ class Sol::Command::Move < Sol::Command
   attribute :card, String
   attribute :dest, String
 
+  def invalid_move
+    return feedback(:message => 'Invalid move', :render => false)
+  end
   def execute(session)
     card = find_card(session)
     start_pile = card.pile
+    return invalid_move unless start_pile.can_pickup?(card)
     destination = find_dest(session)
     
     cards = start_pile.pickup(card)
@@ -17,7 +21,7 @@ class Sol::Command::Move < Sol::Command
     else
       # put them back
       start_pile.putdown(cards)
-      return feedback(:message => 'Invalid move', :render => false)
+      return invalid_move
     end
  end
 

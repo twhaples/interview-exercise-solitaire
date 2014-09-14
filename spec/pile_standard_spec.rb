@@ -12,6 +12,12 @@ describe Sol::Pile::Standard do
     end
   end
 
+  describe '#can_pickup?' do
+    it 'should just be true' do
+      expect(described_class.new.can_pickup?(:sticks)).to eq(true)
+    end
+  end
+
   let(:heart) { 3*13-1 }
   let(:spade) { 2*13-1 }
   let(:diamond) { 13-1 }

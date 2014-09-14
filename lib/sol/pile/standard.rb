@@ -4,6 +4,7 @@ class Sol::Pile::Standard < Sol::Pile
   # all faceup piles have a facedown pile underneath them
   attribute :facedown, Object 
   def visible?; true; end
+  def can_pickup?(card); true; end
 
   def can_putdown?(new_cards)
     last_color = :wild

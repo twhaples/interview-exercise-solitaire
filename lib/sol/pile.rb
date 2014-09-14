@@ -19,5 +19,7 @@ class Sol::Pile
   def putdown(new_cards)
     new_cards.each {|c| add(c) }
   end
- 
+  def can_pickup?(card)
+    return false
+  end 
 end

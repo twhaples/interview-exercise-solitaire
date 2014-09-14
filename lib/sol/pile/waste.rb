@@ -9,8 +9,11 @@ class Sol::Pile::Waste < Sol::Pile
     return old_cards
   end
 
+  def can_pickup?(card)
+    return card == @cards.last
+  end
   def pickup(card)
-    raise ArgumentError unless card == @cards.last
+    raise ArgumentError unless can_pickup?(card)
     return [@cards.pop.tap {|c| c.pile = nil }]
   end
 

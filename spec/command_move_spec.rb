@@ -46,6 +46,22 @@ describe Sol::Command::Move do
       end
     end
 
+    it 'should not let you take inaccessible cards' do
+      # NO DEAL
+      expect { move('ca' => 'c') }.to complain('Invalid move')
+      expect(session.discard[2].size).to eq(0)       # still
+      expect(ace_of_clubs.pile).to eq(session.stack) # still
+    end
+    it 'should rely on pile#can_pickup?' do
+      session.deal!
+      Test::Redef.rd('Sol::Pile::Standard#can_pickup?' => proc { false }) do |rd|
+        expect { move('da' => 'd') }.to complain('Invalid move')
+        expect(ace_of_diamonds.pile).to eq(session.faceup[2])
+        expect(rd.object).to eq([session.faceup[2]])
+        expect(rd.args[0].map(&:to_s)).to eq([ace_of_diamonds.to_s])
+      end
+    end
+
     context 'moving to the discard pile' do
       before { session.deal! }
       it 'should let you target an empty discard pile with a single ace' do
