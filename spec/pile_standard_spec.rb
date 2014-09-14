@@ -10,6 +10,11 @@ describe Sol::Pile::Standard do
       expect(described_class.new.visible?).to eq(true)
     end
   end
+  describe '#can_putdown?' do
+    it 'should be true for now' do
+      expect(described_class.new.can_putdown?(:whatevs)).to eq(true)
+    end
+  end
 
   describe '#pickup' do
     let(:deck) { Sol::Deck.new }

@@ -4,6 +4,7 @@ class Sol::Pile::Standard < Sol::Pile
   # all faceup piles have a facedown pile underneath them
   attribute :facedown, Object 
 
+  def can_putdown?(card); true; end
   def visible?; true; end
   def pickup(card)
     raise ArgumentError unless index = cards.index(card)
@@ -11,10 +12,6 @@ class Sol::Pile::Standard < Sol::Pile
     picked_up.each {|c| c.pile = nil }
     return picked_up
   end
-  def putdown(cards)
-    cards.each {|c| add(c) }
-  end
-
   def autoflip!
     if cards.empty?
       card = facedown.flip

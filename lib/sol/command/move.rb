@@ -10,11 +10,16 @@ class Sol::Command::Move < Sol::Command
     destination = find_dest(session)
     
     cards = start_pile.pickup(card)
-    destination.putdown(cards)
-
-    start_pile.autoflip!
-    return feedback
-  end
+    if (destination.can_putdown?(cards))
+      destination.putdown(cards)
+      start_pile.autoflip!
+      return feedback
+    else
+      # put them back
+      start_pile.putdown(cards)
+      return feedback(:message => 'Invalid move', :render => false)
+    end
+ end
 
   def to_s; "move card #{card} to pile #{dest}"; end
   def ==(card)

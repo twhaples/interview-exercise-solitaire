@@ -1,6 +1,8 @@
 require 'rspec'
 require 'sol/session'
+require 'sol/renderer'
 require 'sol/command/move'
+require 'sol/command/take_three'
 require_relative './feedback_matchers'
 
 describe Sol::Command::Move do
@@ -18,23 +20,31 @@ describe Sol::Command::Move do
        
     it 'should let you move single cards on the top of a stack' do
       session.deal! # unshuffled
-      expect { move('ca' => '7') }.to change { 
+      expect { move('ca' => '7') }.to provide_boring_feedback.and change { 
         ace_of_clubs.pile
       }.from(session.faceup[0]).to(session.faceup[6])
       expect(session.faceup[0].size).to eq(0)
       expect(session.faceup[6].size).to eq(2)
     end
 
-    it 'should return feedback' do
-      session.deal!
-      expect(move('ca' => '7')).to provide_boring_feedback
-    end
-
-    it 'should let you target a discard pile with a single card' do
-      session.deal!
-      expect { move('ca' => 'c') }.to change {
-        ace_of_clubs.pile
-      }.from(session.faceup[0]).to(session.discard[2])
+    context 'moving to the discard pile' do
+      before { session.deal! }
+      it 'should let you target an empty discard pile with a single ace' do
+        expect { move('ca' => 'c') }.to provide_boring_feedback.and change {
+          ace_of_clubs.pile
+        }.from(session.faceup[0]).to(session.discard[2])
+      end
+      it 'should not let you target an empty discard pile with a non-ace' do
+        # ugh, you can't chain negative matchers in rspec. you can't say expect{}.to not_change,
+        # you can't say expect{}.not_to change {}.and_not change {}, you can't say 
+        # expect{}.not_to change{}.or change{} ...
+        expect { move('s2' => 's') }.not_to change {
+         [session.deck.cards[2*13+1].pile, session.discard[3].cards, session.faceup[6].cards]
+        }
+      end
+      it 'should tell you when you cannot target the discard pile with a non-ace' do
+        expect(move('s2' => 's')).to complain("Invalid move")
+      end
     end
 
     it 'should let you move the top card from the waste pile' do
