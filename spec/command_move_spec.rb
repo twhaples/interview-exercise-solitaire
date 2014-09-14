@@ -127,6 +127,13 @@ describe Sol::Command::Move do
         expect { move('ca' => 'c') }.not_to raise_error
       end
     end
+
+    it 'should be nice about invalid commands' do
+      expect(move('zz' => '1')).to complain('Invalid card')
+      expect(move('ac' => '1')).to complain('Invalid card')
+      expect(move('ca' => '0')).to complain('Invalid destination')
+      expect(move('ca' => '123')).to complain('Invalid destination')
+    end
   end
 
   describe '#to_s' do
@@ -175,18 +182,19 @@ describe Sol::Command::Move do
       expect(dest_for.('c')).to eq(session.discard[2])
       expect(dest_for.('s')).to eq(session.discard[3])
     end
-    it 'should raise errors on non-destination piles' do
-      expect { dest_for.('') }.to raise_error
-      expect { dest_for.('0') }.to raise_error
-      expect { dest_for.('8') }.to raise_error
-      expect { dest_for.('fish') }.to raise_error
-      expect { dest_for.('hello') }.to raise_error
+    it 'should return nil on non-destination piles' do
+      expect(dest_for.('')).to be_nil
+      expect(dest_for.('0')).to be_nil
+      expect(dest_for.('fish')).to be_nil
+      expect(dest_for.('8')).to be_nil
+      expect(dest_for.('t')).to be_nil
+      expect(dest_for.('hello')).to be_nil
     end
-    it 'should raise errors on uppercase input' do
-      expect { dest_for.('D') }.to raise_error
-      expect { dest_for.('H') }.to raise_error
-      expect { dest_for.('C') }.to raise_error
-      expect { dest_for.('S') }.to raise_error
+    it 'should return nil on uppercase input' do
+      expect(dest_for.('D')).to be_nil
+      expect(dest_for.('H')).to be_nil
+      expect(dest_for.('C')).to be_nil
+      expect(dest_for.('S')).to be_nil
     end 
   end
 
@@ -209,13 +217,13 @@ describe Sol::Command::Move do
       end).to eq(session.deck.cards.map(&:to_s))
     end
 
-    it 'should raise errors on non-cards' do
-      expect { card_for.('c0') }.to raise_error
-      expect { card_for.('c1') }.to raise_error
-      expect { card_for.('1c') }.to raise_error
-      expect { card_for.('fish') }.to raise_error
-      expect { card_for.('8') }.to raise_error
-      expect { card_for.('f8') }.to raise_error
+    it 'should return nil on non-cards' do
+      expect(card_for.('c0')).to be_nil
+      expect(card_for.('c1')).to be_nil
+      expect(card_for.('1c')).to be_nil
+      expect(card_for.('fish')).to be_nil
+      expect(card_for.('8')).to be_nil
+      expect(card_for.('f8')).to be_nil
     end
   end
 end
