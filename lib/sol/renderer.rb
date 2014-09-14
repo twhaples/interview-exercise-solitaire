@@ -1,14 +1,21 @@
+require 'virtus'
+
 module Sol; end
 class Sol::Renderer
+  include Virtus.model
+
+  attribute :output, Object, :default => STDOUT
+  attribute :session, Object
+
   Ranks = [nil, 'A', *(2..9).map(&:to_s), 'T', 'J', 'Q', 'K']
   Suits = {:clubs => 'c', :diamonds => 'D', :spades => 's', :hearts => 'H'}
-  def initialize(session)
+
+  def session=(session)
     @layout = [
       [session.waste],
       *((0..6).map {|i| [session.facedown[i], session.faceup[i]] }),
       *((0..3).map {|i| [session.discard[i]] }),
     ]
-
   end
 
   def headings
@@ -35,10 +42,17 @@ class Sol::Renderer
   def self.render_card(c)
     return '' if c.nil?
     return '**' unless c.pile.visible?
+    return _render_card(c)
+  end
+  def self._render_card(c)
     return Suits[c.suit] + Ranks[c.rank]
   end
 
+  def prompt; '> '; end
   def render
-    [headings, *card_rows, ''].join("\n")
+    [headings, *card_rows, prompt].join("\n")
+  end
+  def render!
+    output << render
   end
 end

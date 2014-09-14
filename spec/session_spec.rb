@@ -12,9 +12,12 @@ RSpec::Matchers.define :be_card do |rank, suit|
 end
 
 describe Sol::Session do
+  let(:game) { described_class.new }
   describe '.new' do
+    it 'should have a state' do
+      expect(game.state).to eq(:preplay)
+    end
     it 'should have a deck of cards, which start out in the stack' do
-      game = described_class.new
       expect(game.deck.cards.length).to eq(52)
       expect(game.stack.cards.length).to eq(52)
 
@@ -27,7 +30,6 @@ describe Sol::Session do
 
   describe '#deal!' do
     it 'should take the cards off stack and put them in the piles' do
-      game = described_class.new
       game.deal!
 
       expect(game.faceup[0].cards.first).to be_card(1, :clubs)
@@ -43,7 +45,6 @@ describe Sol::Session do
 
   describe '#start!' do
     it 'should shuffle the stack and deal (in that order)' do
-      game = described_class.new
       Test::Redef.rd(
         'Sol::Pile::Stack#shuffle!' => :wiretap,
         "#{described_class}#deal!" => :wiretap,
@@ -52,8 +53,12 @@ describe Sol::Session do
         expect(rd.call_order).to eq(['Sol::Pile::Stack#shuffle!', "#{described_class}#deal!"])
       end
     end
+
+    it 'should change the state' do
+      expect { game.start! }.to change { game.state }.from(:preplay).to(:play)
+    end
+
     it 'should only work once' do
-      game = described_class.new
       game.start!
       expect { game.start! }.to raise_error(ArgumentError)
     end

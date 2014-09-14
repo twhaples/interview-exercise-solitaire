@@ -1,10 +1,13 @@
 require 'sol/deck'
-require 'sol/pile/simple'
+require 'sol/pile/standard'
 require 'sol/pile/hidden'
 require 'sol/pile/stack'
+require 'sol/pile/waste'
+require 'sol/pile/discard'
 
 module Sol; end
 class Sol::Session
+  attr_reader :state # :preplay => :play => :victory
   attr_reader :deck  # all the cards
 
   attr_reader :stack # the thing you take 3 at a time from
@@ -18,22 +21,25 @@ class Sol::Session
     @deck = Sol::Deck.new
 
     @stack = Sol::Pile::Stack.new
-    @waste = Sol::Pile::Simple.new
+    @waste = Sol::Pile::Waste.new
 
     @deck.cards.each {|c| @stack.add(c) }
 
-    @faceup = (0..6).map { Sol::Pile::Simple.new }
-    @facedown = (0..6).map { Sol::Pile::Hidden.new }
-    @discard = (0..3).map { Sol::Pile::Simple.new }
-    @started = false
+    @facedown = (0..6).map {|i| Sol::Pile::Hidden.new }
+    @faceup   = (0..6).map {|i| Sol::Pile::Standard.new(:facedown => @facedown[i]) }
+    @discard  = (0..3).map {|i| Sol::Pile::Discard.new }
+
+    @destinations = [*@faceup, *@discard]
+    @state = :preplay
   end
 
   def start!
-    raise ArgumentError if @started
+    raise ArgumentError unless @state == :preplay
     @stack.shuffle!
     deal!
-    @started = true
+    @state = :play
   end
+
   def deal!
     (0..6).each do |i_faceup|
       faceup[i_faceup].add(stack.deal)
@@ -41,5 +47,9 @@ class Sol::Session
         facedown[i].add(stack.deal)
       end
     end
+  end
+
+  def get_pile(type, i)
+    {:faceup => @faceup, :discard => @discard}[type][i]
   end
 end

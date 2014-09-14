@@ -7,7 +7,7 @@ require 'sol/renderer'
 describe Sol::Renderer do
   describe '.render_card' do
     it 'should render visible cards right' do
-      pile = Sol::Pile::Simple.new
+      pile = Sol::Pile::Standard.new
       expect(Sol::Deck.new.cards.map do |c| 
         pile.add(c)
         described_class.render_card(c)
@@ -36,15 +36,16 @@ describe Sol::Renderer do
   describe '.new.to_s' do
     it 'should turn a session into plaintext' do
       session = Sol::Session.new
-      renderer = described_class.new(session)
-      expect(renderer.render).to eq(<<EOT
+      renderer = described_class.new(:session => session)
+      expect(renderer.render).to eq(<<EOT.chomp
 [sTack] [1] [2] [3] [4] [5] [6] [7] [D] [H] [c] [s]
+> 
 EOT
       )
      
       session.deal!
       screen = renderer.render
-      expected = <<EOT
+      expected = <<EOT.chomp
 [sTack] [1] [2] [3] [4] [5] [6] [7] [D] [H] [c] [s]
         cA  **  **  **  **  **  **                
             c8  **  **  **  **  **                
@@ -53,10 +54,20 @@ EOT
                         DT  **  **
                             DK  **                 
                                 s2               
+> 
 EOT
       screen.gsub!(/\s+$/m, '')
       expected.gsub!(/\s+$/m, '') 
       expect(screen).to eq(expected)
+    end
+  end
+  describe '#render!' do
+    it 'should puts data to the appropriate filehandle' do
+      session = Sol::Session.new.tap(&:start!)
+      fake_stdout = StringIO.new
+      renderer = described_class.new(:output => fake_stdout, :session => session)
+      renderer.render!
+      expect(fake_stdout.string).to eq(renderer.render)
     end
   end
 end
