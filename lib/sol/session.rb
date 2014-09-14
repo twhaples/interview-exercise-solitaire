@@ -25,9 +25,9 @@ class Sol::Session
 
     @deck.cards.each {|c| @stack.add(c) }
 
-    @faceup   = (0..6).map { Sol::Pile::Standard.new }
-    @facedown = (0..6).map { Sol::Pile::Hidden.new }
-    @discard  = (0..3).map { Sol::Pile::Discard.new }
+    @facedown = (0..6).map {|i| Sol::Pile::Hidden.new }
+    @faceup   = (0..6).map {|i| Sol::Pile::Standard.new(:facedown => @facedown[i]) }
+    @discard  = (0..3).map {|i| Sol::Pile::Discard.new }
 
     @destinations = [*@faceup, *@discard]
     @state = :preplay

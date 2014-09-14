@@ -53,6 +53,29 @@ describe Sol::Command::Move do
       expect { move('c3' => '2') }.to change { session.faceup[0].size }.from(3).to(0)
       expect(session.faceup[1].cards).to eq([d4, *stack3])
     end
+
+    describe 'exposing hidden cards' do
+      before { session.deal! }
+      let(:club3) { session.deck.cards[2] }
+      let(:club9) { session.deck.cards[8] }
+      let(:diamondA) { session.deck.cards[13] }
+      let(:expose) { lambda do; move('da' => 'd'); end }
+      # Move the diamond ace to the diamond discard pile, exposing the club-9 underneath.
+
+      it 'should change card.pile' do
+        expect { expose.() }.to change { club9.pile }.from(session.facedown[2]).to(session.faceup[2])
+      end
+      it 'should remove the card from the old pile' do
+        expect { expose.() }.to change { session.facedown[2].cards }.from([club3, club9]).to([club3])
+      end
+      it 'should put the card on the new pile' do
+        expect { expose.() }.to change { session.faceup[2].cards }.from([diamondA]).to([club9])
+      end 
+
+      it 'should work when the pile is empty' do
+        expect { move('ca' => 'c') }.not_to raise_error
+      end
+    end
   end
 
   describe '#to_s' do
@@ -60,6 +83,7 @@ describe Sol::Command::Move do
       expect(described_class.new(:card => 'ac', :dest => 'x').to_s).to eq("move card ac to pile x")
     end
   end
+
   describe '#==' do
     let(:common_args) { {:card => 'aa', :dest => 'z'} }
     let(:common_cmd) { described_class.new(common_args) }

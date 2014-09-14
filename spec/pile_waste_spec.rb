@@ -44,4 +44,10 @@ describe Sol::Pile::Waste do
       expect(pile.cards.map(&:pile)).to eq([pile] * pile.size)
     end
   end
+
+  describe '#autoflip!' do
+    it 'exists' do
+      expect(described_class.new.autoflip!).to be_nil
+    end
+  end
 end

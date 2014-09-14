@@ -1,5 +1,6 @@
 require 'rspec'
 require 'sol/pile/standard'
+require 'sol/pile/hidden'
 require_relative './pile_examples'
 
 describe Sol::Pile::Standard do
@@ -48,6 +49,44 @@ describe Sol::Pile::Standard do
 
     it 'should not let you remove cards which are not present' do
       expect { pile.pickup(deck.cards.last) }.to raise_error
+    end
+  end
+
+  describe '#autoflip!' do
+    let(:deck) { Sol::Deck.new }
+    let(:facedown) { Sol::Pile::Hidden.new }
+    let(:pile) { described_class.new(:facedown => facedown) }
+    context 'when the pile is not empty' do
+      before do
+        pile.add(deck.cards[0])
+        facedown.add(deck.cards[1])
+      end
+      it 'should not add cards to itself' do
+        expect { pile.autoflip! }.not_to change { pile.cards }
+      end
+      it 'should not remove cards from the facedown pile' do
+        expect { pile.autoflip! }.not_to change { facedown.cards }
+      end
+    end
+    context 'when the pile is empty but there are facedown cards' do
+      let(:top_card) { deck.cards[9] }
+      before do
+        facedown.add(deck.cards[2])
+        facedown.add(deck.cards[33])
+        facedown.add(top_card)
+      end
+      it 'should move the top card' do
+        expect { pile.autoflip! }.to change { top_card.pile }.from(facedown).to(pile)
+      end
+
+      it 'should add the card to itself' do
+        expect { pile.autoflip! }.to change { pile.cards }.from([]).to([top_card])
+      end
+    end
+    context 'when both piles are empty' do
+      it 'should do nothing' do
+        expect { pile.autoflip! }.not_to change { pile.cards }.from([])
+      end
     end
   end
 end

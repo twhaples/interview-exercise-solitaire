@@ -13,4 +13,7 @@ class Sol::Pile::Waste < Sol::Pile
     raise ArgumentError unless card == @cards.last
     return [@cards.pop.tap {|c| c.pile = nil }]
   end
+
+  def autoflip!
+  end
 end

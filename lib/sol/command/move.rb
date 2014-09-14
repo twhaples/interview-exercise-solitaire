@@ -9,10 +9,13 @@ class Sol::Command::Move
 
   def execute(session)
     card = find_card(session)
+    start_pile = card.pile
     destination = find_dest(session)
     
-    cards = card.pile.pickup(card)
+    cards = start_pile.pickup(card)
     destination.putdown(cards)
+
+    start_pile.autoflip!
   end
 
   def to_s; "move card #{card} to pile #{dest}"; end

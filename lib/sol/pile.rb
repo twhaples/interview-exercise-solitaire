@@ -1,7 +1,12 @@
+require 'virtus'
 module Sol; end
+
 class Sol::Pile
+  include Virtus.model
+
   attr_reader :cards
-  def initialize
+  def initialize(*args)
+    super(*args)
     @cards = []
   end
 
