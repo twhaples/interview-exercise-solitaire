@@ -7,10 +7,19 @@ class Sol::Command::Move
   attribute :card, String
   attribute :dest, String
 
+  def execute(session)
+    card = find_card(session)
+    destination = find_dest(session)
+    
+    cards = card.pile.pickup(card)
+    destination.putdown(cards)
+  end
+
   def to_s; "move card #{card} to pile #{dest}"; end
   def ==(card)
     card.to_s == self.to_s
   end
+
   def find_dest(session)
     if self.dest =~ /\A[1-7]\Z/
       return session.get_pile(:faceup, dest.to_i - 1)

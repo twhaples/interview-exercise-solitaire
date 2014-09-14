@@ -3,6 +3,58 @@ require 'sol/session'
 require 'sol/command/move'
 
 describe Sol::Command::Move do
+  def move(spec)
+    spec.each do |k, v|
+      described_class.new(:card => k, :dest => v).execute(session)
+    end
+  end
+  def take3!
+    Sol::Command::TakeThree.new.execute(session)
+  end
+  describe '#execute' do
+   let(:session) { Sol::Session.new }
+   let(:ace_of_clubs) { session.deck.cards.first }
+       
+    it 'should let you move single cards on the top of a stack' do
+      session.deal! # unshuffled
+      expect { move('ca' => '7') }.to change { 
+        ace_of_clubs.pile
+      }.from(session.faceup[0]).to(session.faceup[6])
+      expect(session.faceup[0].size).to eq(0)
+      expect(session.faceup[6].size).to eq(2)
+    end
+
+    it 'should let you target a discard pile with a single card' do
+      session.deal!
+      expect { move('ca' => 'c') }.to change {
+        ace_of_clubs.pile
+      }.from(session.faceup[0]).to(session.discard[2])
+    end
+
+    it 'should let you move the top card from the waste pile' do
+      session.deal!
+      take3!
+      spade5 = session.waste.cards.last
+      expect { move('s5' => '4') }.to change { spade5.pile }.from(session.waste).to(session.faceup[3])
+    end
+
+    it 'should let you move a stack of faceup cards' do
+      cards = session.deck.cards
+      stack3 = [cards[2], cards[13 + 1], cards[0] ]
+      d4 = cards[13+3]
+      #OMGHAX 
+      d4.pile = nil
+      stack3.each {|c| c.pile=nil; session.faceup[0].add(c) }
+      #</OMGHAX> (back to regular hax)
+      session.faceup[1].add(d4)
+
+      # [1] 3c 2d Ac
+      # [2] 4d
+      expect { move('c3' => '2') }.to change { session.faceup[0].size }.from(3).to(0)
+      expect(session.faceup[1].cards).to eq([d4, *stack3])
+    end
+  end
+
   describe '#to_s' do
     it "should interpolate .card and .dest" do
       expect(described_class.new(:card => 'ac', :dest => 'x').to_s).to eq("move card ac to pile x")
