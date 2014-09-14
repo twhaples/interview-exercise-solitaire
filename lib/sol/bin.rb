@@ -10,24 +10,17 @@ class Sol::Bin
   attribute :renderer, Object, :default => lambda {|_, _| Sol::Renderer.new(:output => STDOUT) }
   attribute :parser, Object, :default => lambda {|_, _| Sol::Parser.new(:input => STDIN) }
   def go!
-    play_again = true
-    while play_again do
+    feedback = Sol::Feedback.new
+    while feedback.play_again do
       session = Sol::Session.new
       session.start!
       renderer.session = session
-      keep_playing = true
-      while keep_playing do
-        renderer.render!
+      feedback = Sol::Feedback.new
+      while feedback.keep_playing do
+        renderer.render! if feedback.render
         command = parser.next
-        case command
-          when :quit
-            keep_playing = false
-            play_again = false
-          when :restart
-            keep_playing = false
-          else
-            command.execute(session)
-        end
+        feedback = command.execute(session)
+        renderer.message!(feedback.message) if feedback.message
       end
     end
   end

@@ -11,40 +11,50 @@ describe Sol::Parser do
   context 'parsing commands' do
     let(:io) { IO.pipe }
     let(:write) { io[1] }
-    let(:parser) { described_class.new(:input => io[0]) }
+    let(:fake_stdout) { StringIO.new }
+    let(:parser) { described_class.new(:input => io[0], :output => fake_stdout) }
     describe '#next' do
-      it 'should return :quit on EOF' do
+      it 'should quit on EOF' do
         write.close
-        expect(parser.next).to eq(:quit)
+        expect(parser.next).to be_a(Sol::Command::Quit)
       end
-      it 'should return :quit on Q' do
+      it 'should quit on Q' do
         write.puts('Q')
-        expect(parser.next).to eq(:quit)
+        expect(parser.next).to be_a(Sol::Command::Quit)
       end
-      it 'should return :restart on R' do
+      it 'should include a prompt' do
+        write.close
+        expect { parser.next }.to change {fake_stdout.string}.to("> ")
+      end
+      it 'should restart on R' do
         write.puts('R')
-        expect(parser.next).to eq(:restart)
+        expect(parser.next).to be_a(Sol::Command::Restart)
       end
       it 'should handle multiple commands' do
         write.puts("R\nR\nR\nQ\nR")
-        expect( (1..5).map { parser.next } ).to eq([
-          :restart, :restart, :restart, :quit, :restart
+        expect( (1..5).map { parser.next.class } ).to eq([
+          Sol::Command::Restart,
+          Sol::Command::Restart,
+          Sol::Command::Restart,
+          Sol::Command::Quit,
+          Sol::Command::Restart,
         ])
+        expect(fake_stdout.string).to eq("> " * 5)
       end
       it 'should handle nonsense' do
         write.puts("fish")
-        expect(parser.next).to eq(:invalid)
+        expect(parser.next).to be_a(Sol::Command::Invalid)
       end
       it 'should handle empty strings' do
         write.puts
-        expect(parser.next).to be_nil
+        expect(parser.next).to be_a(Sol::Command::Empty)
         write.puts("             ")
-        expect(parser.next).to be_nil
+        expect(parser.next).to be_a(Sol::Command::Empty)
       end
       it 'should handle lowercase' do
         write.puts("r\nq")
-        expect(parser.next).to eq(:restart)
-        expect(parser.next).to eq(:quit)
+        expect(parser.next).to be_a(Sol::Command::Restart)
+        expect(parser.next).to be_a(Sol::Command::Quit)
       end
       it 'should handle the take-three command' do
         write.puts('T')
@@ -60,11 +70,11 @@ describe Sol::Parser do
       end
       it 'should not get confused by miscellaneous other invalid inputs' do
         write.puts("a man, a plan, a canal, panama")
-        expect(parser.next).to eq(:invalid)
+        expect(parser.next).to be_a(Sol::Command::Invalid)
         write.puts("xx yy")
-        expect(parser.next).to eq(:invalid)
+        expect(parser.next).to be_a(Sol::Command::Invalid)
         write.puts("x yz")
-        expect(parser.next).to eq(:invalid)
+        expect(parser.next).to be_a(Sol::Command::Invalid)
       end
     end
   end

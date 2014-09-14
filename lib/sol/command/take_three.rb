@@ -1,7 +1,6 @@
-require 'virtus'
+require 'sol/command'
 
-module Sol; module Command; end end
-class Sol::Command::TakeThree
+class Sol::Command::TakeThree < Sol::Command
   def execute(session)
     if session.stack.size == 0
       session.stack.refresh(session.waste.recycle)
@@ -11,5 +10,6 @@ class Sol::Command::TakeThree
         session.waste.add(session.stack.deal)
       end
     end
+    return feedback
   end
 end

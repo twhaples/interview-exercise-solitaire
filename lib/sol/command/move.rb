@@ -1,9 +1,6 @@
-require 'virtus'
+require 'sol/command'
 
-module Sol; module Command; end end
-class Sol::Command::Move
-  include Virtus.model
-
+class Sol::Command::Move < Sol::Command
   attribute :card, String
   attribute :dest, String
 
@@ -16,6 +13,7 @@ class Sol::Command::Move
     destination.putdown(cards)
 
     start_pile.autoflip!
+    return feedback
   end
 
   def to_s; "move card #{card} to pile #{dest}"; end

@@ -1,19 +1,20 @@
 require 'rspec'
 require 'sol/session'
 require 'sol/command/move'
+require_relative './feedback_matchers'
 
 describe Sol::Command::Move do
   def move(spec)
     spec.each do |k, v|
-      described_class.new(:card => k, :dest => v).execute(session)
+      return described_class.new(:card => k, :dest => v).execute(session)
     end
   end
   def take3!
     Sol::Command::TakeThree.new.execute(session)
   end
   describe '#execute' do
-   let(:session) { Sol::Session.new }
-   let(:ace_of_clubs) { session.deck.cards.first }
+    let(:session) { Sol::Session.new }
+    let(:ace_of_clubs) { session.deck.cards.first }
        
     it 'should let you move single cards on the top of a stack' do
       session.deal! # unshuffled
@@ -22,6 +23,11 @@ describe Sol::Command::Move do
       }.from(session.faceup[0]).to(session.faceup[6])
       expect(session.faceup[0].size).to eq(0)
       expect(session.faceup[6].size).to eq(2)
+    end
+
+    it 'should return feedback' do
+      session.deal!
+      expect(move('ca' => '7')).to provide_boring_feedback
     end
 
     it 'should let you target a discard pile with a single card' do

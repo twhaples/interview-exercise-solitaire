@@ -39,7 +39,6 @@ describe Sol::Renderer do
       renderer = described_class.new(:session => session)
       expect(renderer.render).to eq(<<EOT.chomp
 [sTack] [1] [2] [3] [4] [5] [6] [7] [D] [H] [c] [s]
-> 
 EOT
       )
      
@@ -54,7 +53,6 @@ EOT
                         DT  **  **
                             DK  **                 
                                 s2               
-> 
 EOT
       screen.gsub!(/\s+$/m, '')
       expected.gsub!(/\s+$/m, '') 
@@ -67,7 +65,15 @@ EOT
       fake_stdout = StringIO.new
       renderer = described_class.new(:output => fake_stdout, :session => session)
       renderer.render!
-      expect(fake_stdout.string).to eq(renderer.render)
+      expect(fake_stdout.string).to eq(renderer.render + "\n")
+    end
+  end
+  describe '#message!' do
+    it 'should communicate a helpful message to the appropriate filehandle' do
+      fake_stdout = StringIO.new
+      renderer = described_class.new(:output => fake_stdout)
+      message = "tom is an excellent programmer you should hire him"
+      expect { renderer.message!(message) }.to change { fake_stdout.string }.to(message + "\n")
     end
   end
 end
