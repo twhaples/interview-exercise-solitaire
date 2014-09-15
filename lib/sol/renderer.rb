@@ -48,11 +48,14 @@ class Sol::Renderer
     return Suits[c.suit] + Ranks[c.rank]
   end
 
-  def prompt; '> '; end
   def render
-    [headings, *card_rows, prompt].join("\n")
+    [headings, *card_rows].join("\n")
   end
   def render!
-    output << render
+    output.puts render
+  end
+
+  def message!(message)
+    output.puts message
   end
 end

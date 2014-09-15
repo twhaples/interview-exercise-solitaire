@@ -23,12 +23,18 @@ describe Sol::Command::TakeThree do
       it 'should move three cards out of the Stack' do
         expect { execute.() }.to change { session.stack.size }.by(-3)
       end
+      it 'should return feedback' do
+        expect(execute.()).to provide_boring_feedback
+      end
     end
     context 'when the Waste has all the cards' do
       before(:each) { 52.times { session.waste.add(session.stack.deal) }}
       it 'should recycle the waste into the stack' do
          expect { execute.() }.to change { session.stack.size }.from(0).to(52)
       end
+      it 'should return feedback' do
+        expect(execute.()).to provide_boring_feedback
+      end 
     end
     context 'when Stack has only 2 cards' do
       before(:each) { 50.times { session.stack.deal } }
@@ -37,12 +43,18 @@ describe Sol::Command::TakeThree do
         expect { execute.() }.to change { session.stack.size }.from(2).to(0)
         expect(session.waste.cards).to eq(saved_cards)
       end
+      it 'should return feedback' do
+        expect(execute.()).to provide_boring_feedback
+      end 
     end
     context 'when the Stack and Waste are both empty' do
       before(:each) { 52.times { session.stack.deal } }
       it 'should do nothing' do
         expect { execute.() }.not_to raise_error
       end
+      it 'should return feedback' do
+        expect(execute.()).to provide_boring_feedback
+      end 
     end
   end
 end

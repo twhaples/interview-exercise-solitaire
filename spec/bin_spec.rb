@@ -23,12 +23,20 @@ describe Sol::Bin do
       fake_cmd_1 = FakeSol::Command.new
       fake_cmd_2 = FakeSol::Command.new
 
-      fake_parser = FakeSol::Parser.new(:commands => [:restart, fake_cmd_1, fake_cmd_2, :quit])
+      fake_parser = FakeSol::Parser.new(:commands => [
+        Sol::Command::Restart.new, 
+        Sol::Command::Invalid.new,
+        fake_cmd_1,
+        fake_cmd_2,
+        Sol::Command::Quit.new
+      ])
 
       game = Sol::Bin.new(:renderer => fake_render, :parser => fake_parser)
       game.go!
       expect(fake_parser.commands).to eq([]) 
       expect(fake_render.rendered.length).to eq(4)
+
+      expect(fake_render.messages).to eq(['Invalid command'])
 
       game1, *games2 = *fake_render.rendered
       expect(games2.uniq.length).to eq 1
@@ -48,24 +56,30 @@ describe Sol::Bin do
 end
 
 module FakeSol; end
-class FakeSol::Command
+class FakeSol::Command < Sol::Command
   attr_reader :executions
   def initialize
     @executions = []
   end
   def execute(session)
     @executions << session
+    return feedback()
   end
 end
 
 class FakeSol::Render
   attr_accessor :session
   attr_accessor :rendered
+  attr_accessor :messages
   def initialize
     @rendered = []
+    @messages = []
   end
   def render!
     @rendered << session
+  end
+  def message!(mess)
+    @messages << mess
   end
 end
 class FakeSol::Parser
